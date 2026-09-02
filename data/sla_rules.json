@@ -1,0 +1,70 @@
+{
+  "version": "1.0",
+  "notes": "Example/configurable SLA definitions per payment rail + exception type. Edit freely — the app reads this file at runtime. Nothing here is legal advice; 'referenceFramework' fields are illustrative labels only, not asserted legal claims.",
+  "atRiskBufferMinutes": 60,
+  "rules": [
+    {
+      "id": "UPI_TIMEOUT_NO_CREDIT",
+      "rail": "UPI",
+      "failureType": "Timeout - Beneficiary Credit Not Confirmed",
+      "slaHours": 6,
+      "escalateBeforeBreachMinutes": 60,
+      "referenceFramework": "NPCI UPI Dispute Resolution TAT (illustrative)",
+      "description": "Debit confirmed at source, beneficiary credit status unconfirmed after timeout window."
+    },
+    {
+      "id": "UPI_DUPLICATE_DEBIT",
+      "rail": "UPI",
+      "failureType": "Duplicate Debit",
+      "slaHours": 4,
+      "escalateBeforeBreachMinutes": 45,
+      "referenceFramework": "NPCI UPI Dispute Resolution TAT (illustrative)",
+      "description": "Same transaction appears debited more than once for a single customer instruction."
+    },
+    {
+      "id": "IMPS_FAILED_NO_REVERSAL",
+      "rail": "IMPS",
+      "failureType": "Failed Transaction - Auto Reversal Not Received",
+      "slaHours": 24,
+      "escalateBeforeBreachMinutes": 120,
+      "referenceFramework": "NPCI IMPS Auto-Reversal TAT (illustrative)",
+      "description": "Beneficiary bank declined credit; auto-reversal to source account not yet observed."
+    },
+    {
+      "id": "NEFT_CREDIT_DELAY",
+      "rail": "NEFT",
+      "failureType": "Credit Delay Beyond Batch Window",
+      "slaHours": 48,
+      "escalateBeforeBreachMinutes": 180,
+      "referenceFramework": "RBI NEFT Settlement Cycle TAT (illustrative)",
+      "description": "Funds debited from remitter; beneficiary credit delayed beyond expected settlement batch."
+    },
+    {
+      "id": "RTGS_CREDIT_NOT_CONFIRMED",
+      "rail": "RTGS",
+      "failureType": "Credit Not Confirmed by Beneficiary Bank",
+      "slaHours": 24,
+      "escalateBeforeBreachMinutes": 120,
+      "referenceFramework": "RBI RTGS TAT (illustrative)",
+      "description": "High-value transfer debited; beneficiary bank has not confirmed final credit."
+    },
+    {
+      "id": "CARD_DECLINED_AMOUNT_HELD",
+      "rail": "Card",
+      "failureType": "Declined but Amount on Hold",
+      "slaHours": 72,
+      "escalateBeforeBreachMinutes": 240,
+      "referenceFramework": "Card Network Chargeback/Auto-Reversal TAT (illustrative)",
+      "description": "Authorization shows declined/failed at merchant, but hold/debit still reflects on customer statement."
+    },
+    {
+      "id": "UPI_MERCHANT_NOT_CREDITED",
+      "rail": "UPI",
+      "failureType": "Merchant Not Credited - Goods/Service Not Rendered",
+      "slaHours": 12,
+      "escalateBeforeBreachMinutes": 90,
+      "referenceFramework": "NPCI UPI Dispute Resolution TAT (illustrative)",
+      "description": "Customer debited, merchant reports non-receipt of funds for a completed order."
+    }
+  ]
+}

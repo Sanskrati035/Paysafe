@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Recon · Payment Recovery Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">R</div>
+      <div class="brand-text">
+        <div class="brand-name">Recon</div>
+        <div class="brand-sub">Payment Recovery Ops</div>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <button class="nav-item active" data-page="dashboard"><span class="nav-icon">◧</span>Dashboard</button>
+      <button class="nav-item" data-page="transactions"><span class="nav-icon">≋</span>Transactions</button>
+      <button class="nav-item" data-page="exceptions"><span class="nav-icon">⚠</span>Exceptions</button>
+      <button class="nav-item" data-page="agent"><span class="nav-icon">◎</span>AI Agent</button>
+      <button class="nav-item" data-page="recovery"><span class="nav-icon">⇄</span>Recovery Queue</button>
+      <button class="nav-item" data-page="sla"><span class="nav-icon">⏱</span>SLA Monitor</button>
+      <button class="nav-item" data-page="evidence"><span class="nav-icon">▤</span>Evidence</button>
+      <button class="nav-item" data-page="audit"><span class="nav-icon">≡</span>Audit Logs</button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="pulse-row"><span class="pulse-dot"></span>SLA engine sweeping live</div>
+      <div class="sidebar-foot-sub">Simulated environment · no real funds move</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-right">
+        <div class="clock" id="clock">--:--:--</div>
+      </div>
+    </header>
+
+    <div class="page-content" id="pageContent">
+      <!-- pages injected by app.js -->
+    </div>
+  </main>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
