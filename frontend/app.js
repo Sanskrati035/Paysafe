@@ -2,7 +2,7 @@
    Payment Exception Recovery AI — frontend application (vanilla JS SPA)
    ========================================================================== */
 
-const API_BASE = 'https://paysafe-production.up.railway.app';
+const API_BASE = import.meta.env.VITE_API_URL || "https://paysafe-production.up.railway.app"
 
 const RAIL_COLORS = {
   UPI: '#4f8cff',
