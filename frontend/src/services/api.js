@@ -1,4 +1,6 @@
-const BASE = ""; // proxied to backend by Vite dev server
+// Empty locally so Vite proxies requests. Railway injects this during the
+// frontend build, allowing the separately deployed backend to receive API calls.
+const BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 
 async function req(path, opts = {}) {
   const res = await fetch(`${BASE}${path}`, {
@@ -54,7 +56,7 @@ function transformCase(c) {
 
 export const api = {
   // dashboard / transactions
-  dashboardStats: () => req("/api/dashboard/summary"),
+  dashboardStats: () => req("/api/stats/dashboard"),
   listTransactions: () => req("/api/transactions"),
   getTransaction: (id) => req(`/api/transactions/${id}`),
 
@@ -70,7 +72,7 @@ export const api = {
     return transformCase(res);
   },
   getEvidence: (caseId) => req(`/api/cases/${caseId}/evidence`),
-  getEvidencePdfUrl: (caseId) => `/api/cases/${caseId}/evidence/pdf`,
+  getEvidencePdfUrl: (caseId) => `${BASE}/api/cases/${caseId}/evidence/pdf`,
   listRecoveryActions: (caseId) => req(`/api/cases/${caseId}/recovery-actions`),
   approveRecoveryAction: (caseId, actionId, body) =>
     req(`/api/cases/${caseId}/recovery-actions/${actionId}/approve`, {
