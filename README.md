@@ -1,6 +1,6 @@
 # PAYSAFE — AI Payment Exception & Recovery Agent
 
-A hackathon MVP demonstrating an AI agent that **detects, classifies,
+A MVP demonstrating an AI agent that **detects, classifies,
 investigates, decides, recovers, tracks SLAs on, and escalates** payment
 exceptions across **UPI, IMPS, NEFT, RTGS and AEPS**.
 
