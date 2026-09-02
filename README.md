@@ -143,8 +143,7 @@ to `http://localhost:8000`, so both must be running.
 ## Known limitations (MVP scope)
 
 - SQLite only; not built for concurrent writers at scale.
-- The live agent feed uses polling, not WebSockets (simpler for a hackathon
-  demo, trivial to swap later).
+- The live agent feed uses polling, not WebSockets (simpler for demo, trivial to swap later).
 - LLM classification path is untested end-to-end in this build environment
   (no network egress); the rule-based fallback path is what's exercised by
   the seed data and is what runs by default.
