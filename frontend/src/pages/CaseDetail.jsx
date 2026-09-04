@@ -250,7 +250,7 @@ export default function CaseDetail() {
                   {a.amount > 0 && (
                     <p className="mt-1 text-xs text-slate-500">Amount: ₹{a.amount.toLocaleString("en-IN")}</p>
                   )}
-                  {a.status === "PENDING_APPROVAL" && a.requires_human_approval && (
+                  {a.status === "PENDING_APPROVAL" && (
                     <div className="mt-2 flex gap-2">
                       <button
                         onClick={() => handleApprove(a.id, true)}
