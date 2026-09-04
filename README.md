@@ -32,7 +32,7 @@ There is **exactly one background agent process** per running backend
 - opens an `ExceptionCase` with full evidence, SLA tracking, a proposed
   recovery action, an audit trail entry, and a customer notification,
 - and pushes a live event onto an in-memory ring buffer. The backend scans
-  every 60 seconds by default, while the frontend refreshes the live feed
+  every 30 seconds by default, while the frontend refreshes the live feed
   every 4 seconds so scan progress remains visible.
 
 A customer can also self-report a free-text complaint
