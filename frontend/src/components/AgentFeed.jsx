@@ -34,7 +34,9 @@ export default function AgentFeed({ onNewEvent }) {
       } catch (e) {
         if (!cancelled) setError(e.message);
       } finally {
-        if (!cancelled) timer = setTimeout(poll, 60000);
+        // Keep the dashboard responsive; this only refreshes the UI. The
+        // backend controls the actual scan cadence.
+        if (!cancelled) timer = setTimeout(poll, 4000);
       }
     }
     poll();

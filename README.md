@@ -31,8 +31,9 @@ There is **exactly one background agent process** per running backend
 - decides the recovery workflow (`app/workflows/decision_engine.py`),
 - opens an `ExceptionCase` with full evidence, SLA tracking, a proposed
   recovery action, an audit trail entry, and a customer notification,
-- and pushes a live event onto an in-memory ring buffer the frontend polls
-  every 60 seconds to render a "live agent feed."
+- and pushes a live event onto an in-memory ring buffer. The backend scans
+  every 60 seconds by default, while the frontend refreshes the live feed
+  every 4 seconds so scan progress remains visible.
 
 A customer can also self-report a free-text complaint
 (`POST /api/agent/classify`), which runs the exact same pipeline immediately
