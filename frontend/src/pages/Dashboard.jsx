@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [complaint, setComplaint] = useState({ transaction_id: "", customer_message: "" });
   const [submitting, setSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState(null);
+  const [lastRefreshed, setLastRefreshed] = useState(null);
 
   const load = useCallback(async () => {
     try {
@@ -27,6 +28,7 @@ export default function Dashboard() {
       setStats(s);
       setCases(c);
       setError(null);
+      setLastRefreshed(new Date());
     } catch (e) {
       setError(e.message);
     } finally {
@@ -85,6 +87,10 @@ export default function Dashboard() {
         <StatCard label="Escalated" value={stats?.escalated_cases ?? "-"} tone="danger" />
         <StatCard label="SLA At Risk" value={stats?.sla_at_risk ?? "-"} tone="warn" />
         <StatCard label="SLA Breached" value={stats?.sla_breached ?? "-"} tone="danger" />
+      </div>
+
+      <div className="-mt-3 text-right text-xs text-slate-500">
+        Last refreshed: {lastRefreshed ? lastRefreshed.toLocaleTimeString() : "—"}
       </div>
 
       <AgentFeed onNewEvent={load} />

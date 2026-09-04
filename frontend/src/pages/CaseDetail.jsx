@@ -12,6 +12,9 @@ export default function CaseDetail() {
   const [investigateResult, setInvestigateResult] = useState(null);
   const [approving, setApproving] = useState(null);
   const [fallbackApproved, setFallbackApproved] = useState(false);
+  const [confirmation, setConfirmation] = useState(null);
+  const [confirmingAction, setConfirmingAction] = useState(false);
+  const [approvalSuccess, setApprovalSuccess] = useState(null);
 
   const load = useCallback(async () => {
     try {
@@ -61,6 +64,7 @@ export default function CaseDetail() {
         note: approve ? "Approved via PAYSAFE dashboard (simulated)." : "Rejected via PAYSAFE dashboard.",
       });
       await load();
+      if (approve) setApprovalSuccess("Recovery action approved and simulated successfully.");
     } catch (e) {
       setError(e.message);
     } finally {
@@ -93,8 +97,24 @@ export default function CaseDetail() {
           : previous,
       );
       setFallbackApproved(true);
+      setApprovalSuccess("Recovery action approved and simulated successfully. Case status is RESOLVED.");
     } finally {
       setApproving(null);
+    }
+  }
+
+  async function confirmRecoveryAction() {
+    if (!confirmation) return;
+    setConfirmingAction(true);
+    try {
+      if (confirmation.kind === "fallback") {
+        await handleFallbackApprove();
+      } else {
+        await handleApprove(confirmation.action.id, confirmation.approve);
+      }
+      setConfirmation(null);
+    } finally {
+      setConfirmingAction(false);
     }
   }
 
@@ -223,11 +243,16 @@ export default function CaseDetail() {
           <section className="rounded-2xl border border-edge bg-panel/60 p-5">
             <h2 className="text-sm font-semibold text-slate-200">Recovery actions (simulated — human approval required)</h2>
             <div className="mt-3 space-y-3">
+              {approvalSuccess && (
+                <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-300">
+                  {approvalSuccess}
+                </div>
+              )}
               {(!c.recovery_actions || c.recovery_actions.length === 0) && (
                 <div className="rounded-lg border border-edge bg-ink/40 p-3">
                   <p className="text-xs text-slate-500">No recovery action proposed yet.</p>
                   <button
-                    onClick={handleFallbackApprove}
+                    onClick={() => setConfirmation({ kind: "fallback", approve: true })}
                     disabled={approving === "fallback" || investigating || fallbackApproved}
                     className="mt-3 rounded-md bg-emerald-500/90 px-3 py-1.5 text-xs font-medium text-ink hover:bg-emerald-400 disabled:opacity-50"
                   >
@@ -244,23 +269,27 @@ export default function CaseDetail() {
                 <div key={a.id} className="rounded-lg border border-edge bg-ink/40 p-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="text-sm font-medium text-slate-200">{a.action_type}</div>
-                    <StatusBadge value={a.status} />
+                    <div className="flex items-center gap-2">
+                      <StatusBadge value={a.status} />
+                      {a.status === "PENDING_APPROVAL" && (
+                        <button
+                          onClick={() => setConfirmation({ kind: "action", action: a, approve: true })}
+                          disabled={approving === a.id}
+                          className="rounded-md bg-emerald-500/90 px-3 py-1.5 text-xs font-medium text-ink hover:bg-emerald-400 disabled:opacity-50"
+                        >
+                          Approve Recovery Action
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <p className="mt-1 text-xs text-slate-400">{a.description}</p>
                   {a.amount > 0 && (
                     <p className="mt-1 text-xs text-slate-500">Amount: ₹{a.amount.toLocaleString("en-IN")}</p>
                   )}
                   {a.status === "PENDING_APPROVAL" && (
-                    <div className="mt-2 flex gap-2">
+                    <div className="mt-2 flex items-center gap-2">
                       <button
-                        onClick={() => handleApprove(a.id, true)}
-                        disabled={approving === a.id}
-                        className="rounded-md bg-emerald-500/90 px-3 py-1.5 text-xs font-medium text-ink hover:bg-emerald-400 disabled:opacity-50"
-                      >
-                        Approve (simulate)
-                      </button>
-                      <button
-                        onClick={() => handleApprove(a.id, false)}
+                        onClick={() => setConfirmation({ kind: "action", action: a, approve: false })}
                         disabled={approving === a.id}
                         className="rounded-md border border-edge px-3 py-1.5 text-xs text-slate-300 hover:border-rose-500/50 hover:text-rose-300 disabled:opacity-50"
                       >
@@ -346,6 +375,39 @@ export default function CaseDetail() {
           </section>
         </div>
       </div>
+      {confirmation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 px-4">
+          <div className="w-full max-w-md rounded-2xl border border-edge bg-panel p-5 shadow-glow">
+            <h2 className="text-base font-semibold text-slate-100">
+              {confirmation.approve ? "Confirm recovery approval" : "Confirm recovery rejection"}
+            </h2>
+            <p className="mt-2 text-sm text-slate-400">
+              {confirmation.approve ? "This simulated action will update the case workflow." : "This simulated action will reject the proposed recovery."}
+            </p>
+            <dl className="mt-4 space-y-2 rounded-lg border border-edge bg-ink/40 p-3 text-xs">
+              <ModalInfo label="Action" value={confirmation.action?.action_type || "Recovery approval"} />
+              <ModalInfo label="Rail" value={c.rail} />
+              <ModalInfo label="Amount" value={`₹${(confirmation.action?.amount || c.transaction?.amount || c.amount || 0).toLocaleString("en-IN")}`} />
+            </dl>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmation(null)}
+                disabled={confirmingAction}
+                className="rounded-md border border-edge px-3 py-1.5 text-xs text-slate-300 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmRecoveryAction}
+                disabled={confirmingAction}
+                className={`rounded-md px-3 py-1.5 text-xs font-medium text-ink disabled:opacity-50 ${confirmation.approve ? "bg-emerald-500/90 hover:bg-emerald-400" : "bg-rose-400 hover:bg-rose-300"}`}
+              >
+                {confirmingAction ? "Processing…" : confirmation.approve ? "Approve (simulate)" : "Reject"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -355,6 +417,15 @@ function Info({ label, value }) {
     <div>
       <dt className="text-slate-500">{label}</dt>
       <dd className="text-slate-200">{value}</dd>
+    </div>
+  );
+}
+
+function ModalInfo({ label, value }) {
+  return (
+    <div className="flex justify-between gap-4">
+      <dt className="text-slate-500">{label}</dt>
+      <dd className="text-right text-slate-200">{value}</dd>
     </div>
   );
 }
