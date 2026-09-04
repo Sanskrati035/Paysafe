@@ -32,7 +32,7 @@ There is **exactly one background agent process** per running backend
 - opens an `ExceptionCase` with full evidence, SLA tracking, a proposed
   recovery action, an audit trail entry, and a customer notification,
 - and pushes a live event onto an in-memory ring buffer the frontend polls
-  every few seconds to render a "live agent feed."
+  every 60 seconds to render a "live agent feed."
 
 A customer can also self-report a free-text complaint
 (`POST /api/agent/classify`), which runs the exact same pipeline immediately
@@ -107,6 +107,19 @@ npm run dev
 
 Open http://localhost:5173. The Vite dev server proxies `/api` and `/mock`
 to `http://localhost:8000`, so both must be running.
+
+## Deployment
+
+The backend is deployed on Railway:
+
+- Service: https://paysafe-production.up.railway.app
+- Health check: https://paysafe-production.up.railway.app/health
+- API documentation: https://paysafe-production.up.railway.app/docs
+
+The Railway service is configured from `backend/railway.toml` and starts with
+`uvicorn app.main:app --host 0.0.0.0 --port $PORT`. For a separately deployed
+Vite frontend, set `VITE_API_URL=https://paysafe-production.up.railway.app`
+at build time. Local development can leave it unset and use the Vite proxy.
 
 ## Key endpoints
 

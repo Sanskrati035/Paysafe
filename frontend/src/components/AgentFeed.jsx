@@ -34,7 +34,7 @@ export default function AgentFeed({ onNewEvent }) {
       } catch (e) {
         if (!cancelled) setError(e.message);
       } finally {
-        if (!cancelled) timer = setTimeout(poll, 4000);
+        if (!cancelled) timer = setTimeout(poll, 60000);
       }
     }
     poll();
