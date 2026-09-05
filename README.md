@@ -4,6 +4,10 @@ A MVP demonstrating an AI agent that **detects, classifies,
 investigates, decides, recovers, tracks SLAs on, and escalates** payment
 exceptions across **UPI, IMPS, NEFT, RTGS and AEPS**.
 
+# Live Demo
+
+[**Try PaySafe Live →**](just-insight-production-0474.up.railway.app)
+
 > ⚠️ **Simulation only.** This project never connects to real banking/NPCI
 > systems and never moves real money. All "network" responses come from a
 > local mock service backed by SQLite. Every money-impacting recovery action
