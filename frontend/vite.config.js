@@ -6,8 +6,8 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      "/api": "http://localhost:3001",
-      "/mock": "http://localhost:3001",
+      "/api": "http://localhost:8000",
+      "/mock": "http://localhost:8000",
     },
   },
 });

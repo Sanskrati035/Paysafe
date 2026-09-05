@@ -23,7 +23,7 @@ There is **exactly one background agent process** per running backend
 `lifespan` hook. It:
 
 - scans every transaction on a fixed interval (`AGENT_SCAN_INTERVAL_SECONDS`,
-  default 8s),
+  default 30s),
 - runs each through the rule-based structured classifier
   (`app/agents/classifier.py`),
 - investigates (`app/agents/investigator.py`) against the mock payment-network
@@ -138,21 +138,27 @@ at build time. Local development can leave it unset and use the Vite proxy.
 | POST | `/api/agent/scan-now` | Manually trigger an immediate scan |
 | GET | `/api/stats/dashboard` | Aggregate counts for the dashboard cards |
 
-## Notes on the AI classifier
+## AI + deterministic decisioning
 
-- **Known payment codes / structured transaction state** (debit/credit
-  status, network status, duplicates, cash-dispensed flags) are always
-  classified deterministically by `structured_from_transaction()` — fast,
-  free, and 100% reproducible.
-- **Free-text customer complaints** first run through a keyword/regex
-  rule-based classifier (`rule_based_classify`) that covers the phrasings
-  called out in the spec (e.g. *"I paid but receiver didn't receive"*,
-  *"money got deducted twice"*, *"UPI is stuck"*, *"cash wasn't dispensed but
-  account was debited"*).
-- If `ANTHROPIC_API_KEY` is set, genuinely ambiguous complaints are instead
-  sent to Claude for structured-JSON reasoning, with automatic fallback to
-  the rule-based classifier on any API error — **the app always works even
-  with zero configuration.**
+PAYSAFE uses a hybrid approach rather than sending every transaction to an
+LLM. This keeps money-critical decisions reliable, explainable, and
+reproducible, while still using AI where natural-language reasoning adds
+value.
+
+- **Structured payment states** - debit and credit status, network status,
+  duplicate indicators, and cash-dispensed status - are classified
+  deterministically by `structured_from_transaction()`.
+- **Customer complaints** use a rule-based classifier by default. When an
+  `ANTHROPIC_API_KEY` is configured, Claude can produce structured reasoning
+  for the natural-language complaint; any unavailable or invalid LLM response
+  automatically falls back to the rule-based classifier, so the app works
+  fully offline with zero configuration.
+- **Recovery and SLA handling** remain deterministic: the resulting exception
+  type and investigation evidence pass through explicit recovery-workflow and
+  SLA rules before any simulated action is proposed.
+
+In short: **LLMs help interpret language; deterministic rules govern
+money-impacting decisions.**
 
 ## Known limitations (MVP scope)
 
